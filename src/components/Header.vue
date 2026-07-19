@@ -204,16 +204,26 @@ h1 {
 
   .header-actions {
     width: 100%;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0.6rem;
   }
 
   .refresh-meta {
     align-items: flex-start;
   }
 
+  .refresh-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+  }
+
   .dev-credit {
     font-size: 0.75rem;
+    justify-content: center;
+    width: 100%;
   }
 }
 </style>
