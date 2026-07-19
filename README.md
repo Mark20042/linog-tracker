@@ -19,6 +19,13 @@ I built this project because of the recent earthquakes in Bogo City , Cebu . I w
 - **Framework:** [Vue 3](https://vuejs.org/)
 - **Build Tool:** [Vite](https://vitejs.dev/)
 
+## Data Source
+
+- **Earthquake Data:** This project uses public earthquake bulletin data from [PHIVOLCS](https://earthquake.phivolcs.dost.gov.ph/).
+- **Attribution:** PHIVOLCS is the source of the earthquake information displayed in this app.
+- **Non-affiliation:** LinogTracker is an independent project and is not officially affiliated with PHIVOLCS.
+- **Verification:** For safety-critical or official updates, always check the PHIVOLCS website directly.
+
 ## Project Setup
 
 ```bash

@@ -62,6 +62,17 @@ function formatLastUpdated(value) {
         <span>Developed by</span>
         <span class="dev-name">AzoreDev</span>
       </div>
+
+      <div class="source-credit">
+        <span>Data source</span>
+        <a
+          href="https://earthquake.phivolcs.dost.gov.ph/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          PHIVOLCS
+        </a>
+      </div>
     </div>
   </header>
 </template>
@@ -110,6 +121,21 @@ h1 {
   display: flex;
   gap: 0.35rem;
   align-items: center;
+}
+
+.source-credit {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.source-credit a {
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .header-actions {
@@ -222,6 +248,11 @@ h1 {
 
   .dev-credit {
     font-size: 0.75rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .source-credit {
     justify-content: center;
     width: 100%;
   }
