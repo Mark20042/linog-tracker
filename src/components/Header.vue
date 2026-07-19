@@ -1,4 +1,27 @@
-<script setup></script>
+<script setup>
+defineProps({
+  refreshing: {
+    type: Boolean,
+    default: false,
+  },
+  lastUpdated: {
+    type: Date,
+    default: null,
+  },
+});
+
+defineEmits(["refresh"]);
+
+function formatLastUpdated(value) {
+  if (!value) return "Not updated yet";
+
+  return new Intl.DateTimeFormat("en-PH", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(value);
+}
+</script>
 
 <template>
   <header class="app-header">
@@ -19,9 +42,26 @@
       </div>
       <h1>Philippines Linog Tracker</h1>
     </div>
-    <div class="dev-credit">
-      <span>Developed by</span>
-      <span class="dev-name">AzoreDev</span>
+    <div class="header-actions">
+      <div class="refresh-meta">
+        <span class="refresh-label">Last updated</span>
+        <span class="refresh-time">{{ formatLastUpdated(lastUpdated) }}</span>
+      </div>
+
+      <button
+        class="refresh-button"
+        :disabled="refreshing"
+        @click="$emit('refresh')"
+      >
+        <span v-if="refreshing" class="refresh-icon spinning">↻</span>
+        <span v-else class="refresh-icon">↻</span>
+        {{ refreshing ? "Refreshing..." : "Refresh" }}
+      </button>
+
+      <div class="dev-credit">
+        <span>Developed by</span>
+        <span class="dev-name">AzoreDev</span>
+      </div>
     </div>
   </header>
 </template>
@@ -36,6 +76,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
   z-index: 50;
+  gap: 1rem;
 }
 
 .brand {
@@ -71,6 +112,75 @@ h1 {
   align-items: center;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.refresh-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.refresh-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+}
+
+.refresh-time {
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
+.refresh-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.refresh-icon {
+  display: inline-block;
+  font-size: 0.95rem;
+}
+
+.spinning {
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .dev-name {
   font-weight: 700;
   color: #38bdf8; /* Lighter, vibrant blue for dark bg */
@@ -84,10 +194,22 @@ h1 {
 @media (max-width: 640px) {
   .app-header {
     padding: 0.75rem 1rem;
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   h1 {
     font-size: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .refresh-meta {
+    align-items: flex-start;
   }
 
   .dev-credit {

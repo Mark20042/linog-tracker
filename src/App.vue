@@ -9,9 +9,11 @@ import Header from "./components/Header.vue";
 
 const earthquakes = ref([]);
 const loading = ref(true);
+const refreshing = ref(false);
 const error = ref(null);
 const mapRef = ref(null);
 const currentFilter = ref("today");
+const lastUpdated = ref(null);
 
 const filteredEarthquakes = computed(() => {
   const now = new Date();
@@ -44,15 +46,32 @@ const filteredEarthquakes = computed(() => {
 });
 
 onMounted(async () => {
+  await loadEarthquakes();
+});
+
+async function loadEarthquakes() {
+  const isInitialLoad = loading.value;
+
+  if (!isInitialLoad) {
+    refreshing.value = true;
+  }
+
   try {
     earthquakes.value = await PhivolcsService.getEarthquakes();
+    error.value = null;
+    lastUpdated.value = new Date();
   } catch (e) {
     error.value = "Failed to load data. Please try again later.";
     console.error(e);
   } finally {
     loading.value = false;
+    refreshing.value = false;
   }
-});
+}
+
+function handleRefresh() {
+  loadEarthquakes();
+}
 
 function handleQuakeSelect(quake) {
   if (mapRef.value) {
@@ -63,7 +82,11 @@ function handleQuakeSelect(quake) {
 
 <template>
   <div class="app-container">
-    <Header />
+    <Header
+      :refreshing="refreshing"
+      :last-updated="lastUpdated"
+      @refresh="handleRefresh"
+    />
 
     <div class="main-content">
       <div v-if="loading" class="loading-overlay">
