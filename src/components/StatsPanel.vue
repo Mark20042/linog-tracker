@@ -46,15 +46,19 @@ const stats = computed(() => {
   return { todayCount, weekCount, monthCount, latest };
 });
 
+const emit = defineEmits(['toggle-stats']);
+
 function toggle() {
   isOpen.value = !isOpen.value;
+  emit('toggle-stats', isOpen.value);
 }
 </script>
 
 <template>
   <div class="stats-panel" :class="{ 'is-open': isOpen }">
     <button class="toggle-btn" @click="toggle">
-      {{ isOpen ? "Hide Reports" : "Show Reports" }}
+      <span class="toggle-icon">{{ isOpen ? '-' : '+' }}</span>
+      <span class="toggle-label">{{ isOpen ? "Hide" : "Reports" }}</span>
     </button>
 
     <div v-if="isOpen" class="content">
@@ -95,11 +99,11 @@ function toggle() {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 320px;
+  width: auto;
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  z-index: 1000; /* Above map */
+  z-index: 1000;
   box-shadow: var(--shadow-lg);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(12px);
@@ -107,6 +111,7 @@ function toggle() {
 }
 
 .stats-panel.is-open {
+  width: 320px;
   padding: 1rem;
 }
 
@@ -120,10 +125,19 @@ function toggle() {
   padding: 0.5rem;
   text-align: right;
   font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
 }
 
 .toggle-btn:hover {
   text-decoration: underline;
+}
+
+.toggle-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .content h2 {
@@ -149,23 +163,21 @@ function toggle() {
   padding: 1rem 0.5rem;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .stat-card.today {
-  background: rgba(59, 130, 246, 0.08); /* Primary blue tint */
+  background: rgba(59, 130, 246, 0.08);
   border-color: rgba(59, 130, 246, 0.2);
 }
 
 .stat-card.week {
-  background: rgba(14, 165, 233, 0.08); /* Light blue/cyan tint */
+  background: rgba(14, 165, 233, 0.08);
   border-color: rgba(14, 165, 233, 0.2);
 }
 
 .stat-card.month {
-  background: rgba(99, 102, 241, 0.08); /* Indigo tint */
+  background: rgba(99, 102, 241, 0.08);
   border-color: rgba(99, 102, 241, 0.2);
 }
 
@@ -233,7 +245,7 @@ function toggle() {
 }
 
 .mag {
-  background: #ef4444; /* Standardized red accent for latest mag */
+  background: #ef4444;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -269,25 +281,89 @@ function toggle() {
   }
 }
 
-/* Mobile Responsiveness */
+/* Mobile Responsiveness - compact modal card */
 @media (max-width: 768px) {
   .stats-panel {
-    top: auto;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    border: none;
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 10px -1px rgba(0, 0, 0, 0.1);
+    top: 0.35rem;
+    right: 0.35rem;
+    width: auto;
+    max-width: calc(100% - 0.7rem);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stats-panel.is-open {
+    width: 220px;
+    padding: 0.5rem;
   }
 
   .toggle-btn {
-    text-align: center;
-    padding: 0.75rem;
-    background: var(--bg-panel);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+    gap: 0.2rem;
+  }
+
+  .toggle-icon {
+    font-size: 0.8rem;
+  }
+
+  .content h2 {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .stat-grid {
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-card {
+    padding: 0.35rem 0.25rem;
+    border-radius: 0.3rem;
+  }
+
+  .label {
+    font-size: 0.5rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .value {
+    font-size: 1rem;
+  }
+
+  .latest-eq {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.4rem;
+    margin-bottom: 0;
+  }
+
+  .latest-header {
+    margin-bottom: 0.25rem;
+  }
+
+  .latest-eq h3 {
+    font-size: 0.55rem;
+  }
+
+  .location {
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .details {
+    font-size: 0.6rem;
+  }
+
+  .mag {
+    padding: 0.1rem 0.4rem;
+    font-size: 0.6rem;
+  }
+
+  .ping {
+    width: 5px;
+    height: 5px;
   }
 }
 </style>

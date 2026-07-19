@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onUnmounted } from "vue";
 import { PhivolcsService } from "./services/PhivolcsService";
 import MapContainer from "./components/MapContainer.vue";
 import StatsPanel from "./components/StatsPanel.vue";
@@ -14,6 +14,27 @@ const error = ref(null);
 const mapRef = ref(null);
 const currentFilter = ref("today");
 const lastUpdated = ref(null);
+const sidebarOpen = ref(true);
+const statsPanelOpen = ref(true);
+const windowWidth = ref(window.innerWidth);
+
+const isMobile = computed(() => windowWidth.value <= 768);
+const showLegend = computed(() => {
+  if (isMobile.value) return !statsPanelOpen.value;
+  return true;
+});
+
+function onResize() {
+  windowWidth.value = window.innerWidth;
+}
+
+onMounted(() => {
+  window.addEventListener("resize", onResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", onResize);
+});
 
 const filteredEarthquakes = computed(() => {
   const now = new Date();
@@ -78,6 +99,10 @@ function handleQuakeSelect(quake) {
     mapRef.value.focusQuake(quake);
   }
 }
+
+function handleStatsToggle(open) {
+  statsPanelOpen.value = open;
+}
 </script>
 
 <template>
@@ -86,6 +111,7 @@ function handleQuakeSelect(quake) {
       :refreshing="refreshing"
       :last-updated="lastUpdated"
       @refresh="handleRefresh"
+      @toggle-sidebar="sidebarOpen = !sidebarOpen"
     />
 
     <div class="main-content">
@@ -103,14 +129,18 @@ function handleQuakeSelect(quake) {
         <SidebarList
           :earthquakes="filteredEarthquakes"
           v-model:activeFilter="currentFilter"
+          v-model:open="sidebarOpen"
           @select-quake="handleQuakeSelect"
           class="sidebar-container"
         />
 
         <div class="map-wrapper">
           <MapContainer ref="mapRef" :earthquakes="filteredEarthquakes" />
-          <StatsPanel :earthquakes="earthquakes" />
-          <MapLegend />
+          <StatsPanel
+            :earthquakes="earthquakes"
+            @toggle-stats="handleStatsToggle"
+          />
+          <MapLegend :visible="showLegend" />
         </div>
       </template>
     </div>
@@ -121,6 +151,7 @@ function handleQuakeSelect(quake) {
 .app-container {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg-color);
@@ -188,21 +219,29 @@ button {
   cursor: pointer;
 }
 
-/* Mobile Responsiveness */
+/* Mobile */
 @media (max-width: 768px) {
   .main-content {
     flex-direction: column;
   }
 
   .sidebar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100% !important;
-    order: 2;
+    min-width: 100% !important;
+    height: auto;
+    flex-shrink: 0;
+    z-index: 1000;
+    pointer-events: auto;
   }
 
   .map-wrapper {
     flex: 1;
-    min-height: 50vh;
-    order: 1;
+    min-height: 0;
+    position: relative;
   }
 }
 </style>
